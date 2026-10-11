@@ -26,6 +26,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::apiResource('products', ProductController::class)->only(['index', 'show']);
 
+// Tells the React app whether this copy is the portfolio demo (and the demo login to show)
+Route::get('config', fn () => config('yummiii.demo')
+    ? ['demo' => true, 'demo_email' => config('yummiii.demo_email'), 'demo_password' => config('yummiii.demo_password')]
+    : ['demo' => false]);
+
 Route::get('categories', fn () => Category::withCount('products')->orderBy('sort_order')->orderBy('name')->get());
 
 Route::get('delivery-areas', fn () => DeliveryArea::orderBy('fee')->get());

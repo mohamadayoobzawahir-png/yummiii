@@ -902,3 +902,24 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; }
 .btn-light { background: var(--white); color: var(--green-dark); border: 2px solid var(--green); text-decoration: none; }
 .btn-light:hover { background: var(--green); color: var(--white); }
 
+/* 👀 Portfolio demo only */
+.demo-banner {
+  background: var(--yellow);
+  color: var(--text);
+  text-align: center;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+}
+.demo-banner a { color: var(--text); font-weight: 800; }
+.demo-login {
+  background: #FFFCE0;
+  border: 2px dashed var(--yellow);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+.demo-login code { background: var(--white); padding: 2px 6px; border-radius: 6px; font-size: 0.9rem; }
+

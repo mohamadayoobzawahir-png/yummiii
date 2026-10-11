@@ -35,6 +35,8 @@ services:
       CACHE_STORE: database
       QUEUE_CONNECTION: sync
       SANCTUM_TOKEN_EXPIRATION: ${SANCTUM_TOKEN_EXPIRATION:-10080}
+      # true ONLY for the portfolio demo copy (public demo login + nightly reset allowed)
+      DEMO_MODE: ${DEMO_MODE:-false}
     volumes:
       - storage:/app/storage            # product photos + logs survive updates
       - caddy_data:/data                # HTTPS certificates
