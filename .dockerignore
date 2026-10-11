@@ -1,0 +1,15 @@
+# Keep the production image small and free of secrets / local data
+.git
+.env.prod
+backups
+**/node_modules
+frontend/dist
+backend/vendor
+backend/.env
+backend/database/*.sqlite
+backend/bootstrap/cache/*.php
+backend/storage/logs/*
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/app/public/products

@@ -1,0 +1,52 @@
+# Yummiii development stack
+#   docker compose up -d      start everything
+#   docker compose down       stop everything (database data is kept)
+name: yummiii
+
+services:
+  # Laravel API → http://localhost:8000
+  backend:
+    build: ./docker/php
+    volumes:
+      - ./backend:/var/www/html
+    ports:
+      - "8000:8000"
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # React + Vite → http://localhost:5173
+  frontend:
+    image: node:22
+    user: node                    # UID 1000, same as you on the host
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+  # MySQL → inside Docker: host "mysql", port 3306
+  #         from your PC (DBeaver, MySQL Workbench...): localhost:3308
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: yummiii
+      MYSQL_USER: yummiii
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      # 127.0.0.1 (TCP) only answers once MySQL is fully started
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10m           # the very first start creates the database and can take minutes
+
+volumes:
+  mysql_data:
