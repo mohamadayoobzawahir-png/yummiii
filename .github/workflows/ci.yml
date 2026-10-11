@@ -1,0 +1,55 @@
+# Runs on GitHub after every push: Laravel tests + React lint/build.
+# The green ✅ / red ❌ shows next to each commit and as the badge in README.md.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    name: Laravel tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, intl, zip, bcmath
+          coverage: none
+
+      - name: Install PHP packages
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare Laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      # Uses the in-memory SQLite database from phpunit.xml (tests refuse anything else)
+      - name: Run tests
+        run: php artisan test
+
+  frontend:
+    name: React lint & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
