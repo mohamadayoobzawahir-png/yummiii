@@ -1,16 +1,12 @@
 #!/usr/bin/env bash
 # Build and (re)start the LIVE Yummiii. Run it on the server, from the project folder:
-#   ./deploy.sh
+#   ./deploy.sh          one site            (settings in .env.prod)
+#   ./deploy.sh shop     the real shop        (settings in .env.shop, behind the front door)
+#   ./deploy.sh demo     the portfolio demo   (settings in .env.demo, behind the front door)
 # Safe to run again for every update: it rebuilds, restarts and runs new migrations.
 set -euo pipefail
 cd "$(dirname "$0")"
-
-if [ ! -f .env.prod ]; then
-  echo "❌ .env.prod is missing. Copy .env.prod.example to .env.prod and fill it in."
-  exit 1
-fi
-
-DC="docker compose --env-file .env.prod -f compose.prod.yaml"
+. docker/prod/site.sh
 
 echo "🔨 Building..."
 $DC build --pull app
@@ -25,4 +21,4 @@ until $DC exec -T app php artisan db:show >/dev/null 2>&1; do sleep 5; done
 echo "🗄️ Updating the database..."
 $DC exec -T app php artisan migrate --force
 
-echo "✅ Yummiii is live at $(grep '^APP_URL=' .env.prod | cut -d= -f2-)"
+echo "✅ Yummiii${SITE:+ ($SITE)} is live at $(grep '^APP_URL=' "$ENV_FILE" | cut -d= -f2-)"

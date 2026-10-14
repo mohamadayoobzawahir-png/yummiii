@@ -1,0 +1,31 @@
+# The "front door" when two Yummiii sites share one server.
+# It owns ports 80/443, gets HTTPS certificates for both addresses, and passes each
+# visitor to the right site. Start it with:  ./proxy.sh
+name: yummiii-proxy
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"     # HTTP/3
+    environment:
+      SHOP_DOMAIN: ${SHOP_DOMAIN:?Set SHOP_DOMAIN in .env.proxy}
+      DEMO_DOMAIN: ${DEMO_DOMAIN:?Set DEMO_DOMAIN in .env.proxy}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in .env.proxy}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data              # HTTPS certificates
+      - caddy_config:/config
+    networks:
+      - yummiii-web
+
+networks:
+  yummiii-web:
+    external: true
+
+volumes:
+  caddy_data:
+  caddy_config:

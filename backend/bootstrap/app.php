@@ -14,6 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Behind the front-door proxy (two sites on one server), every request arrives from
+        // the proxy. Trusting its X-Forwarded-For header lets Laravel see each visitor's real
+        // IP, so rate limits apply per visitor instead of to everyone at once. Only set
+        // TRUSTED_PROXIES where the app can't be reached except through the proxy.
+        if ($proxies = env('TRUSTED_PROXIES')) {
+            $middleware->trustProxies(at: $proxies);
+        }
+
         // Lets routes say ->middleware('admin')
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,

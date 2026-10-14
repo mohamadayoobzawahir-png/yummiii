@@ -1,4 +1,7 @@
 # Passwords and secrets for the live server
 .env.prod
+.env.shop
+.env.demo
+.env.proxy
 # Database backups contain customers' names and phone numbers
 backups/

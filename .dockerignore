@@ -1,6 +1,9 @@
 # Keep the production image small and free of secrets / local data
 .git
 .env.prod
+.env.shop
+.env.demo
+.env.proxy
 backups
 **/node_modules
 frontend/dist

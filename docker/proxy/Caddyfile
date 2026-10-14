@@ -1,0 +1,19 @@
+# Front door: which address goes to which site.
+# Caddy gets and renews a free HTTPS certificate for each address by itself.
+{
+	email {$ACME_EMAIL}
+}
+
+# 🛍️ The real shop
+{$SHOP_DOMAIN} {
+	encode zstd gzip
+	header -Server
+	reverse_proxy yummiii-shop:80
+}
+
+# 🎓 The portfolio demo
+{$DEMO_DOMAIN} {
+	encode zstd gzip
+	header -Server
+	reverse_proxy yummiii-demo:80
+}

@@ -1,6 +1,114 @@
 # Putting Yummiii online
 
-This guide puts the shop on a server with its own address and free HTTPS.
+There are two ways to run it:
+
+- **[Option A: the shop + the portfolio demo on one free server](#option-a-shop--portfolio-demo-on-one-free-server)**
+  (recommended for us: free, two addresses, the demo resets every night)
+- **[Option B: just one site](#option-b-just-one-site)** on any server with its own domain
+
+---
+
+# Option A: shop + portfolio demo on one free server
+
+```
+yummiii.duckdns.org      ─┐                     ┌─▶ 🛍️ real shop   (own database)
+                          ├─▶ front door (HTTPS) ┤
+yummiii-demo.duckdns.org ─┘                     └─▶ 🎓 demo        (own database, resets nightly)
+```
+
+## A1. Get a free server (Oracle Cloud "Always Free")
+
+1. Sign up at **https://www.oracle.com/cloud/free/**. A card is needed for verification
+   only; "Always Free" resources are not charged. Pick a home region close to Sri Lanka
+   (e.g. **Mumbai, Hyderabad or Singapore**). You can't change it later.
+2. **Create a VM instance**:
+   - Image: **Canonical Ubuntu 24.04**
+   - Shape: **Ampere (VM.Standard.A1.Flex)**, **2 OCPUs, 12 GB memory** (inside the free allowance)
+   - **Add SSH keys** → paste your `~/.ssh/id_ed25519.pub`
+3. Note its **public IP address**.
+4. Open the web ports: **Networking → Virtual cloud networks → your VCN → Security Lists →
+   Default → Add Ingress Rules**: source `0.0.0.0/0`, TCP, destination ports **80,443**.
+5. Ubuntu on Oracle also blocks them inside the server. After logging in (step A3), run:
+
+   ```bash
+   sudo iptables -I INPUT 6 -p tcp -m multiport --dports 80,443 -j ACCEPT
+   sudo netfilter-persistent save
+   ```
+
+If Oracle shows "out of capacity", try again later or pick another availability domain.
+
+## A2. Get two free addresses (DuckDNS)
+
+1. Sign in at **https://www.duckdns.org** (with GitHub or Google).
+2. Add two subdomains, e.g. `yummiii` and `yummiii-demo`, and set **both** to your server's IP.
+
+## A3. Install Docker and copy the project
+
+```bash
+ssh ubuntu@YOUR_SERVER_IP
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker ubuntu && exit       # log out and in again so "docker" works without sudo
+ssh ubuntu@YOUR_SERVER_IP
+git clone https://github.com/mohamadayoobzawahir-png/yummiii.git   # (private repo: use a token or an SSH key)
+cd yummiii
+```
+
+## A4. Fill in the settings (three files)
+
+```bash
+cp .env.proxy.example .env.proxy     # the two addresses + your email
+cp .env.prod.example  .env.shop      # the real shop
+cp .env.prod.example  .env.demo      # the demo
+nano .env.proxy
+```
+
+For **each** of `.env.shop` and `.env.demo`: set `APP_URL` to that site's address with
+`https://`, create a **different** `APP_KEY`, `DB_PASSWORD` and `DB_ROOT_PASSWORD` for each
+(commands are in the file), and add **`DEMO_MODE=true` to `.env.demo` only**.
+`SERVER_NAME` and `ACME_EMAIL` can be anything there: the front door handles HTTPS.
+
+## A5. Start everything
+
+```bash
+./proxy.sh            # the front door
+./deploy.sh shop      # the real shop (first start: a few minutes)
+./deploy.sh demo      # the demo
+./reset-demo.sh       # fill the demo with sample data
+```
+
+First time only, for **the real shop**:
+
+```bash
+DC="docker compose -p yummiii-shop --env-file .env.shop -f compose.prod.yaml -f compose.behind-proxy.yaml"
+$DC exec app php artisan db:seed --force                  # delivery areas + categories
+$DC exec app php artisan yummiii:admin your@email.com     # your sister's / your admin login
+```
+
+Open both addresses 🎉 (HTTPS appears within a minute).
+
+## A6. Nightly jobs
+
+`crontab -e`, then add:
+
+```
+# 2:30 am: back up the real shop (14 days kept in ~/yummiii/backups/shop)
+30 2 * * * /home/ubuntu/yummiii/backup.sh shop >> /home/ubuntu/yummiii/backups/backup.log 2>&1
+# 3:00 am: fresh demo data
+0 3 * * * /home/ubuntu/yummiii/reset-demo.sh >> /home/ubuntu/yummiii/backups/demo-reset.log 2>&1
+```
+
+## A7. Updating later
+
+```bash
+cd ~/yummiii && git pull
+./deploy.sh shop && ./deploy.sh demo
+```
+
+---
+
+# Option B: just one site
+
+This puts the shop on a server with its own address and free HTTPS.
 You'll need about an hour the first time. Every update after that is one command.
 
 **What you need**

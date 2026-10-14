@@ -1,0 +1,17 @@
+# Added on top of compose.prod.yaml when TWO sites share one server (see docker/proxy).
+# Used automatically by: ./deploy.sh shop   and   ./deploy.sh demo
+services:
+  app:
+    ports: !reset []                  # not reachable from the internet directly...
+    environment:
+      SERVER_NAME: ":80"              # ...plain HTTP inside; the front door does HTTPS
+      TRUSTED_PROXIES: "*"            # safe: only the front door can reach this container
+    networks:
+      default:
+      yummiii-web:
+        aliases:
+          - ${APP_ALIAS:?Run this through ./deploy.sh shop or ./deploy.sh demo}
+
+networks:
+  yummiii-web:
+    external: true                    # created by ./proxy.sh
