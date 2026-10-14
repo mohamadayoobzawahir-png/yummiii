@@ -205,7 +205,8 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; }
   border-radius: 999px;
   animation: fade-up 0.8s 0.5s backwards, glow 2s 1.5s infinite;
 }
-.btn-cta:hover { background: var(--white); transform: translateY(-3px) scale(1.05); }
+.btn-cta:hover { background: #F2C200; transform: translateY(-3px) scale(1.05); }
+.hero .btn-cta:hover { background: var(--white); }   /* white only on the green hero */
 
 /* 🍰 Products section */
 .products {
@@ -761,7 +762,7 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; }
 .shop-toolbar .filter-btn { flex: 0 0 auto; }
 
 /* 📊 Admin dashboard */
-.stat-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.stat-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }   /* always a tidy 2 × 2 */
 .stat-tile,
 .dash-card {
   background: var(--white);
@@ -773,7 +774,7 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; }
   gap: 4px;
 }
 .stat-label { font-weight: 800; color: #6B7280; font-size: 0.9rem; }
-.stat-value { font-size: 1.7rem; color: var(--text); }
+.stat-value { font-size: clamp(1.3rem, 2.4vw, 1.7rem); color: var(--text); white-space: nowrap; }
 .stat-note { color: #6B7280; font-size: 0.8rem; }
 .dash-card { gap: 10px; }
 .dash-card h3 { color: var(--green-dark); }
@@ -873,6 +874,8 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; }
 .table-scroll { overflow-x: auto; }
 .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .data-table td { padding: 8px 6px; border-bottom: 1px solid #E5E7EB; vertical-align: top; }
+.data-table .nowrap { white-space: nowrap; }
+.show-all { align-self: center; }
 .data-table .num { text-align: right; white-space: nowrap; font-weight: 800; }
 .data-table .is-cancelled { color: #9CA3AF; text-decoration: line-through; }
 

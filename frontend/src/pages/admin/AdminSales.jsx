@@ -14,6 +14,7 @@ const PERIODS = [
 ]
 
 const rupees = (amount) => `Rs. ${amount.toLocaleString()}`
+const ORDERS_SHOWN = 10   // the rest behind "Show all"
 
 function AdminSales() {
   const { token } = useAuth()
@@ -24,6 +25,7 @@ function AdminSales() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [downloading, setDownloading] = useState(false)
+  const [showAllOrders, setShowAllOrders] = useState(false)
 
   const query = `period=${period}${date ? `&date=${date}` : ''}`
 
@@ -146,36 +148,41 @@ function AdminSales() {
         />
       </div>
 
-      <div className="dash-columns">
-        <div className="dash-card">
-          <h3>⭐ Products sold</h3>
-          {report.products.length === 0 && <p className="empty-note">No sales in this period.</p>}
-          {report.products.map((product, index) => (
-            <p className="summary-row" key={product.name}>
-              <span>{index + 1}. {product.name} × {product.quantity}</span>
-              <span>{rupees(product.sales)}</span>
-            </p>
-          ))}
-        </div>
+      <div className="dash-card">
+        <h3>⭐ Products sold</h3>
+        {report.products.length === 0 && <p className="empty-note">No sales in this period.</p>}
+        {report.products.map((product, index) => (
+          <p className="summary-row" key={product.name}>
+            <span>{index + 1}. {product.name} × {product.quantity}</span>
+            <span>{rupees(product.sales)}</span>
+          </p>
+        ))}
+      </div>
 
-        <div className="dash-card">
-          <h3>🧾 Orders ({report.orders.length})</h3>
-          {report.orders.length === 0 && <p className="empty-note">No orders in this period.</p>}
-          <div className="table-scroll">
-            <table className="data-table">
-              <tbody>
-                {report.orders.map((order) => (
-                  <tr key={order.id} className={order.status === 'cancelled' ? 'is-cancelled' : ''}>
-                    <td><strong>{order.order_number}</strong><br /><span className="order-date">{formatDate(order.created_at)}</span></td>
-                    <td>{order.customer_name}<br /><span className="order-date">{order.delivery_area}</span></td>
-                    <td>{STATUS[order.status]?.emoji} {STATUS[order.status]?.label}</td>
-                    <td className="num">{rupees(order.total)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      {/* Full width, so dates and names don't wrap into tall rows */}
+      <div className="dash-card">
+        <h3>🧾 Orders ({report.orders.length})</h3>
+        {report.orders.length === 0 && <p className="empty-note">No orders in this period.</p>}
+        <div className="table-scroll">
+          <table className="data-table">
+            <tbody>
+              {(showAllOrders ? report.orders : report.orders.slice(0, ORDERS_SHOWN)).map((order) => (
+                <tr key={order.id} className={order.status === 'cancelled' ? 'is-cancelled' : ''}>
+                  <td className="nowrap"><strong>{order.order_number}</strong></td>
+                  <td className="nowrap order-date">{formatDate(order.created_at)}</td>
+                  <td>{order.customer_name}<span className="order-date"> · {order.delivery_area}</span></td>
+                  <td className="nowrap">{STATUS[order.status]?.emoji} {STATUS[order.status]?.label}</td>
+                  <td className="num">{rupees(order.total)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+        {report.orders.length > ORDERS_SHOWN && (
+          <button className="btn btn-light show-all" onClick={() => setShowAllOrders((v) => !v)}>
+            {showAllOrders ? 'Show fewer' : `Show all ${report.orders.length} orders`}
+          </button>
+        )}
       </div>
     </section>
   )
