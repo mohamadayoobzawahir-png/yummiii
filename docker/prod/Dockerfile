@@ -15,6 +15,12 @@ RUN npm run build
 FROM dunglas/frankenphp:1-php8.3
 
 RUN install-php-extensions pdo_mysql zip intl bcmath opcache
+
+# The official image marks frankenphp with a special file permission (so non-root users can
+# use ports 80/443). Hosts with stricter security, like Render, refuse to start any program
+# with that mark ("exec: frankenphp: Operation not permitted"). We don't need it: on Render we
+# listen on port 10000, and on our own server the container runs as root.
+RUN setcap -r /usr/local/bin/frankenphp
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # PHP's recommended production settings, plus ours (upload size, opcache)
