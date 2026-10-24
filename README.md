@@ -14,7 +14,10 @@ Built for a real family food business in Sri Lanka 🇱🇰
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)
 
-**Live demo:** _coming soon_ · **Demo admin:** `demo@yummiii.app` / `demo1234`
+### 👉 [Live demo: yummiii-demo.onrender.com](https://yummiii-demo.onrender.com)
+
+**Demo admin:** `demo@yummiii.app` / `demo1234` ([open the admin panel](https://yummiii-demo.onrender.com/admin/login))
+<br><sub>Hosted on a free plan: the first visit may take up to a minute while the site wakes up. The demo resets with fresh sample data every time it starts.</sub>
 
 </div>
 
@@ -136,7 +139,8 @@ docker compose exec backend php artisan test
 
 ## Deployment
 
-See **[DEPLOY.md](DEPLOY.md)**: one command (`./deploy.sh`) on any Linux server with Docker, with automatic HTTPS and nightly backups.
+The live demo runs on **[Render](https://render.com)** (free plan) from [`render.yaml`](render.yaml):
+every push to `main` redeploys it automatically. For a server of your own, see **[DEPLOY.md](DEPLOY.md)**: one command (`./deploy.sh`) on any Linux server with Docker, with automatic HTTPS and nightly backups.
 
 ## Project structure
 
@@ -149,7 +153,8 @@ docs/        Screenshots
 
 ## About
 
-Yummiii is my sister's food business. I built this shop for her, and the live demo runs
-the same code with sample data, so anyone can explore the admin panel without seeing real customers.
+Yummiii is my sister's food business. I built this shop for her, and the
+[live demo](https://yummiii-demo.onrender.com) runs the same code with sample data, so anyone can
+explore the admin panel without seeing real customers.
 
 Made by [@mohamadayoobzawahir-png](https://github.com/mohamadayoobzawahir-png).
