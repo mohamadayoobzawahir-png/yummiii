@@ -1,0 +1,40 @@
+# Render "Blueprint": everything Render needs to host the PORTFOLIO DEMO for free.
+# On render.com: New → Blueprint → pick this repository → Apply.
+#
+# Free plan notes: the site sleeps after ~15 minutes without visitors and takes about a
+# minute to wake up. Each wake-up starts a fresh demo shop (SQLite, refilled on start).
+services:
+  - type: web
+    name: yummiii-demo
+    runtime: docker
+    plan: free
+    region: singapore                 # closest Render region to Sri Lanka
+    dockerfilePath: ./docker/prod/Dockerfile
+    dockerContext: .
+    healthCheckPath: /up
+    autoDeploy: true                  # every git push to main updates the demo
+    envVars:
+      - key: DEMO_MODE
+        value: "true"
+      - key: APP_NAME
+        value: Yummiii
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /app/storage/demo.sqlite
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: LOG_CHANNEL
+        value: stderr                 # shows up in Render's "Logs" tab
+      - key: LOG_LEVEL
+        value: warning
+      - key: TRUSTED_PROXIES
+        value: "*"                    # Render's load balancer: rate limits per visitor

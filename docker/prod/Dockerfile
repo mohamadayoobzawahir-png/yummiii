@@ -30,6 +30,21 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-in
 COPY backend/ ./
 RUN composer dump-autoload --optimize --no-dev --no-interaction
 
+# Faster starts: routes and views don't depend on any settings, so cache them now
+# (config IS cached at start-up, because it reads the settings)
+RUN php artisan route:cache && php artisan view:cache
+
+# A ready-made PORTFOLIO DEMO database, so the free-hosted demo answers within seconds
+# instead of building it at every start. Only used when DEMO_MODE=true with SQLite.
+# Its pictures are kept aside, so the real shop's storage stays clean.
+RUN DB_CONNECTION=sqlite DB_DATABASE=/app/database/demo-start.sqlite DEMO_MODE=true \
+        APP_URL=http://demo.invalid APP_KEY=base64:YnVpbGQtdGltZS1vbmx5LWtleS0xMjM0NTY3ODkwYWI= \
+        sh -c 'touch "$DB_DATABASE" \
+            && php artisan migrate --force \
+            && php artisan db:seed --class="Database\Seeders\DemoSeeder" --force' \
+    && mkdir -p database/demo-pictures \
+    && mv storage/app/public/products/* database/demo-pictures/
+
 # The built React app, and the web server config
 COPY --from=frontend /build/dist /app/frontend
 COPY docker/prod/Caddyfile /etc/frankenphp/Caddyfile
