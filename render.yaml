@@ -14,6 +14,8 @@ services:
     healthCheckPath: /up
     autoDeploy: true                  # every git push to main updates the demo
     envVars:
+      - key: PORT
+        value: "10000"                # the port Render sends visitors to
       - key: DEMO_MODE
         value: "true"
       - key: APP_NAME

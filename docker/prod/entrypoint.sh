@@ -3,10 +3,18 @@
 set -e
 
 # ---- Hosting platforms like Render: fill in what they don't ask you for ----
-# They tell the app which port to listen on, and handle HTTPS themselves
-if [ -z "${SERVER_NAME:-}" ] && [ -n "${PORT:-}" ]; then
-  export SERVER_NAME=":${PORT}"
+# They tell the app which port to listen on (PORT), and handle HTTPS themselves.
+# Render always routes to 10000 unless told otherwise, so use that if PORT is missing.
+if [ -z "${SERVER_NAME:-}" ]; then
+  if [ -n "${PORT:-}" ]; then
+    export SERVER_NAME=":${PORT}"
+  elif [ -n "${RENDER:-}" ]; then
+    export SERVER_NAME=":10000"
+  else
+    export SERVER_NAME=":80"
+  fi
 fi
+echo "Yummiii web server listening on ${SERVER_NAME}"   # shows in the hosting platform's logs
 # Render gives the site's address in RENDER_EXTERNAL_URL
 if [ -z "${APP_URL:-}" ] && [ -n "${RENDER_EXTERNAL_URL:-}" ]; then
   export APP_URL="$RENDER_EXTERNAL_URL"
