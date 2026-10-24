@@ -926,3 +926,49 @@ h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; }
 }
 .demo-login code { background: var(--white); padding: 2px 6px; border-radius: 6px; font-size: 0.9rem; }
 
+/* ✨ Intro animation (SplashScreen.jsx): the logo pops in, the dots bounce, everything fades */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;                       /* above everything, toasts included */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: radial-gradient(circle at 50% 40%, #74D35C 0%, var(--green) 45%, var(--green-dark) 100%);
+  cursor: pointer;
+  animation: splash-out 0.5s ease-in 1.7s forwards;
+}
+.splash-logo {
+  width: min(60vw, 260px);
+  border-radius: 28px;
+  border: 4px solid var(--white);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+  animation: splash-logo-in 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.splash-dots { display: flex; gap: 12px; }
+.splash-dots span {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  animation: splash-dot 0.6s ease-in-out infinite alternate;
+}
+.splash-dots span:nth-child(1) { background: var(--red); animation-delay: 0.5s; }
+.splash-dots span:nth-child(2) { background: var(--yellow); animation-delay: 0.65s; }
+.splash-dots span:nth-child(3) { background: var(--green-dark); animation-delay: 0.8s; }
+
+@keyframes splash-logo-in {
+  0%   { opacity: 0; transform: scale(0.35) rotate(-10deg); }
+  60%  { opacity: 1; transform: scale(1.08) rotate(3deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+@keyframes splash-dot {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-14px); }
+}
+@keyframes splash-out {
+  to { opacity: 0; visibility: hidden; }
+}
+

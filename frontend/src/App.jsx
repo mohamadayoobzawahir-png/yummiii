@@ -1,5 +1,6 @@
 import Navbar from './components/Navbar'
 import DemoBanner from './components/DemoBanner'
+import SplashScreen from './components/SplashScreen'
 import { Routes, Route } from 'react-router'
 import Home from './pages/Home'
 import Shop from './pages/Shop'
@@ -21,6 +22,7 @@ import AdminStockHistory from './pages/admin/AdminStockHistory'
 function App() {
   return (
     <div>
+      <SplashScreen />
       <DemoBanner />
       <Navbar />
       <main>

@@ -36,6 +36,11 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-in
 COPY backend/ ./
 RUN composer dump-autoload --optimize --no-dev --no-interaction
 
+# Product photos are served through public/storage → storage/app/public. That link is
+# left out of git on purpose (Laravel's default), so create it here; otherwise sites
+# built from GitHub (like Render) show no pictures.
+RUN ln -sfn ../storage/app/public public/storage
+
 # Faster starts: routes and views don't depend on any settings, so cache them now
 # (config IS cached at start-up, because it reads the settings)
 RUN php artisan route:cache && php artisan view:cache
